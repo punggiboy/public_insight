@@ -1,9 +1,11 @@
-.env
-certbot-etc/
-nginx/
+# Docker 관련 파일들
 docker-compose.yml
-docker-compose_1.txt
-docker-compose_2.txt
-docker-compose_3.txt
-docker-compose_4.txt
-docker-compose_5.txt
+docker-compose_*.txt
+
+# nginx 폴더
+nginx/
+
+# Certbot 관련 폴더 (필요한 경우)
+certbot-etc/
+
+.env
