@@ -4,21 +4,21 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { useMemo, memo, useCallback } from "react"
 
 const data = [
-  { name: "분류 1", value: 928, color: "#8A2BE2" },
-  { name: "분류 2", value: 592, color: "#9370DB" },
-  { name: "분류 3", value: 428, color: "#BA55D3" },
-  { name: "분류 4", value: 412, color: "#DDA0DD" },
-  { name: "분류 5", value: 266, color: "#EE82EE" },
-  { name: "기타", value: 122, color: "#E6E6FA" },
+  { name: "분류 1", value: 928, color: "#1a7f7f" },
+  { name: "분류 2", value: 592, color: "#48D1CC" },
+  { name: "분류 3", value: 428, color: "#40E0D0" },
+  { name: "분류 4", value: 412, color: "#7FFFD4" },
+  { name: "분류 5", value: 266, color: "#00CED1" },
+  { name: "기타", value: 122, color: "#E0FFFF" },
 ]
 
-interface GenderDepartmentChartProps {
+interface AssemblyDepartmentChartProps {
   onCategorySelect: (category: string) => void
   selectedCategory: string | null
 }
 
 // 컴포넌트를 memo로 감싸서 불필요한 리렌더링 방지
-const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: GenderDepartmentChartProps) => {
+const AssemblyDepartmentChart = memo(({ onCategorySelect, selectedCategory }: AssemblyDepartmentChartProps) => {
   // 총 개수 계산을 useMemo로 최적화
   const totalCount = useMemo(() => data.reduce((sum, item) => sum + item.value, 0), [])
 
@@ -36,7 +36,7 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
       cx,
       cy,
       midAngle,
-      // innerRadius,
+      //innerRadius,
       outerRadius,
       index,
       name,
@@ -65,12 +65,17 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
       const textAnchor = cos >= 0 ? "start" : "end"
 
       return (
-        <g>
-          <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#333" fontSize={20}>
+        <g key={`label-${index}`} className="chart-label" style={{ transition: "all 0.3s ease" }}>
+          <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#333" fontSize={20} className="total-count">
             {totalCount}
           </text>
-          <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={data[index].color} fill="none" />
-          <circle cx={ex} cy={ey} r={2} fill={data[index].color} stroke="none" />
+          <path
+            d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
+            stroke={data[index].color}
+            fill="none"
+            className="label-line"
+          />
+          <circle cx={ex} cy={ey} r={2} fill={data[index].color} stroke="none" className="label-dot" />
           <text
             x={ex + (cos >= 0 ? 1 : -1) * 12}
             y={ey}
@@ -80,6 +85,7 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
             dominantBaseline="central"
             style={{ cursor: "pointer", fontWeight: selectedCategory === name ? "bold" : "normal" }}
             onClick={() => handleClick(data[index])}
+            className="label-text"
           >
             {name}
           </text>
@@ -90,6 +96,7 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
             fill="#666"
             fontSize={12}
             dominantBaseline="central"
+            className="label-value"
           >
             {value}
           </text>
@@ -104,9 +111,10 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
     () =>
       data.map((entry, index) => (
         <Cell
-          key={`cell-${index}`}
+          key={`cell-${entry.name}`}
           fill={entry.color}
           opacity={selectedCategory === null || selectedCategory === entry.name ? 1 : 0.5}
+          className={`pie-sector ${selectedCategory === entry.name ? "selected" : ""}`}
         />
       )),
     [selectedCategory],
@@ -114,8 +122,39 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
 
   return (
     <div className="pt-2 px-4 flex justify-center">
+      <style jsx global>{`
+        .pie-sector {
+          transition: transform 0.3s ease-out, opacity 0.3s ease;
+          transform-origin: center;
+        }
+        .pie-sector:hover {
+          transform: scale(1.05);
+        }
+        .pie-sector.selected {
+          transform: scale(1.05);
+        }
+        .chart-label {
+          transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .label-line, .label-dot, .label-text, .label-value, .total-count {
+          transition: all 0.3s ease;
+        }
+        .recharts-layer {
+          transition: opacity 0.3s ease;
+        }
+        /* 포커스 아웃라인 제거 */
+        .recharts-pie-sector:focus {
+          outline: none;
+        }
+        .recharts-pie-sector {
+          outline: none;
+        }
+        text:focus, path:focus, circle:focus {
+          outline: none;
+        }
+      `}</style>
       <div className="w-full max-w-2xl">
-        <h2 className="text-2xl font-bold text-center mb-4 text-[#8A2BE2]">여성가족부</h2>
+        <h2 className="text-2xl font-bold text-center mb-4 text-[#1a7f7f]">국회</h2>
         <ResponsiveContainer width="100%" height={550}>
           <PieChart>
             <Pie
@@ -131,6 +170,7 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
               label={renderCustomizedLabel}
               onClick={(entry) => handleClick(entry)}
               cursor="pointer"
+              isAnimationActive={false}
             >
               {cellData}
             </Pie>
@@ -142,7 +182,7 @@ const GenderDepartmentChart = memo(({ onCategorySelect, selectedCategory }: Gend
 })
 
 // 컴포넌트 표시 이름 설정
-GenderDepartmentChart.displayName = "GenderDepartmentChart"
+AssemblyDepartmentChart.displayName = "AssemblyDepartmentChart"
 
-export default GenderDepartmentChart
+export default AssemblyDepartmentChart
 

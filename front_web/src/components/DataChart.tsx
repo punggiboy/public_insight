@@ -24,7 +24,7 @@ export default function DataChart() {
     cx,
     cy,
     midAngle,
-    // innerRadius,
+    //innerRadius,
     outerRadius,
     index,
     name,
@@ -40,7 +40,6 @@ export default function DataChart() {
     value: number
   }) => {
     const RADIAN = Math.PI / 180
-    // radius 변수는 사용되지 않으므로 제거
     const sin = Math.sin(-midAngle * RADIAN)
     const cos = Math.cos(-midAngle * RADIAN)
     const sx = cx + (outerRadius + 10) * cos
@@ -89,6 +88,28 @@ export default function DataChart() {
     <div className="pt-2 px-4 flex flex-col items-center">
       <div className="text-2xl font-bold text-gray-700 mb-4">&lt;2024/10/14&gt;</div>
       <div className="w-full max-w-2xl">
+        <style jsx global>{`
+          /* 호버 효과 */
+          .pie-chart .recharts-pie-sector {
+            transition: transform 0.3s ease-out;
+            transform-origin: center;
+          }
+          
+          .pie-chart .recharts-pie-sector:hover {
+            transform: scale(1.05);
+          }
+          
+          /* 포커스 아웃라인 제거 */
+          .recharts-pie-sector:focus {
+            outline: none;
+          }
+          .recharts-pie-sector {
+            outline: none;
+          }
+          text:focus, path:focus, circle:focus {
+            outline: none;
+          }
+        `}</style>
         <ResponsiveContainer width="100%" height={550}>
           <PieChart>
             <Pie
@@ -104,6 +125,7 @@ export default function DataChart() {
               label={renderCustomizedLabel}
               onClick={(entry) => handleClick(entry)}
               cursor="pointer"
+              className="pie-chart"
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />

@@ -6,6 +6,7 @@ import { useState } from "react"
 import { Bookmark } from "lucide-react"
 import Link from "next/link"
 import { type FeedItem as FeedItemType, getCategoryName } from "../types/feed"
+import { useAuth } from "../contexts/AuthContext"
 
 interface FeedItemProps extends FeedItemType {
   variant?: "default" | "assembly" | "education" | "gender" | "employment" | "culture"
@@ -41,11 +42,17 @@ export default function FeedItem({
   showCategoryName = false,
 }: FeedItemProps) {
   const [isBookmarked, setIsBookmarked] = useState(false)
+  const { isLoggedIn } = useAuth()
 
   const toggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    setIsBookmarked(!isBookmarked)
+
+    if (isLoggedIn) {
+      setIsBookmarked(!isBookmarked)
+    } else {
+      alert("북마크하려면 로그인이 필요합니다.")
+    }
   }
 
   const tagColorClass = variantColors[variant]

@@ -9,6 +9,7 @@ RUN npm run build
 FROM node:18
 WORKDIR /app
 COPY --from=builder /app .
-ENV PORT=80
-EXPOSE 80
-CMD ["npm", "start"]
+
+ENV NODE_ENV=production
+EXPOSE 3000
+CMD ["npm", "run", "start"]
